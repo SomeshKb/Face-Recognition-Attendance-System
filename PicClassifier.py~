@@ -1,0 +1,54 @@
+import face_recognition
+import sqlite3
+import 	time
+import os
+
+                                              # this function is for database
+connect = sqlite3.connect("A.db")                                  # connecting to the database
+today=str(time.strftime('%d%m%Y'))
+
+#connect.execute("ALTER TABLE STUDENT ADD COLUMN Date"+today+" char(1)")
+
+def Insert(Present,rollNo):
+
+	params = (Present,rollNo)                                               # insering a new student data
+	connect.execute("UPDATE STUDENT SET ADDRESS = 'Texas' WHERE ID = 6",params)
+
+
+connect.row_factory = lambda cursor, row: row[0]
+c = connect.cursor()
+ids = c.execute('SELECT roll FROM STUDENT').fetchall()
+length=len(ids)
+
+for number in  ids:
+
+
+	folderName = "user" + str(number)
+
+	folderPath = os.path.join(os.path.dirname(os.path.realpath(__file__)), "dataset/"+folderName)
+	# Load in our reference image of Student
+	known_image = face_recognition.load_image_file(folderPath+'/test.jpg')
+	# Load in our image of a group of people
+	unknown_image = face_recognition.load_image_file("ClassImage/ClassImage.jpg")
+
+	# Create a biden encoding
+	biden_encoding = face_recognition.face_encodings(known_image)[0]
+	# create an encoding based off our group photo
+	unknown_encoding = face_recognition.face_encodings(unknown_image)[0]
+
+	# Compare the encodings and try to determine if Biden exists within a photo
+	results = face_recognition.compare_faces([biden_encoding], unknown_encoding)
+	# Print the results
+	print(results)
+	if(results==results[0]):
+		print "Roll no:"+str(number)+":"+"Present"
+		Insert('P',number)
+		
+	else:
+		print "Roll no:"+str(number)+":"+"Absent"
+		Insert('A',number)
+	
+
+connect.commit()                                                   # commiting into the database
+connect.close()
+
