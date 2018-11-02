@@ -13,4 +13,4 @@ This also provides a simple face_recognition command line tool that lets you do 
 # Installation
 
 for linux and Mac user can use pip to install the face_recogination module 
-pip3 install face_recognition
+   - pip3 install face_recognition
